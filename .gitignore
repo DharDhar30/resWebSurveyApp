@@ -52,3 +52,15 @@ dist-ssr
 *.sln
 *.sw?
 >>>>>>> e7b6f37 (Initial Commit)
+
+
+# Test coverage
+/coverage
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Temporary files
+*.tmp
+*.temp
+

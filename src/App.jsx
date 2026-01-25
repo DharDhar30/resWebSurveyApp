@@ -47,7 +47,7 @@ function App() {
           <div key={index}>
             <p>{issue}</p>
             {/* Slider placeholder */}
-            <input type="range" min="1" max="100" />
+            <input type="range" min="1" max="10" />
           </div>
         ))}
       </div>

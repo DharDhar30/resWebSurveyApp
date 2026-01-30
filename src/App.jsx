@@ -5,6 +5,9 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { submitServey } from './services/surveyService';
 //import IssueList from "./features/survey-ui/IssueList";
 //import IssueSlider from "./features/survey-ui/IssueSlider";
+import React from 'react';
+import IssueList from './components/IssueList';
+import colors from './color';
 
 const API_BASE = "http://127.0.0.1:5000"
 
@@ -27,6 +30,19 @@ const questions = [
 ]
 
 function App() {
+  return (
+    <div
+      style={{
+        backgroundColor: colors.background,  // full page background
+        minHeight: "100vh",                  // ensures it fills the screen
+        padding: "20px"
+      }}
+    >
+      <h1 style={{ color: colors.textLight }}>Welcome to the Web Survey App</h1>
+      <IssueList />
+    </div>
+  );
+}
   const [answers, setAnswers] = useState(() => {
     let initial = {}
     questions.forEach((q) => {

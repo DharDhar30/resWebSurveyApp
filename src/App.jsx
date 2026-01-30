@@ -57,6 +57,7 @@ function App() {
     setLoading(true)
 
 
+    // Abstracted verion of the submission logic to work smoother with backend changes
     try {  // Using the imported service function to submit the survey
       
       const docId = await submitServey("Pinellas", answers); 
@@ -67,24 +68,6 @@ function App() {
     } finally {
       setLoading(false);
     }
-  
-
-    // Create the response object in the exact format specified
-    const data = {
-      county: "Pinellas",
-      responses: answers,
-      submittedAt: serverTimestamp()
-    }
-
-    try {
-      console.log('Submitting:', data)
-      await addDoc(collection(db, 'surveys'), data)
-      setSubmitted(true)
-    } catch (err) {
-      console.error('Error submitting survey:', err)
-      alert('Error submitting survey. Please try again.')
-    }
-    setLoading(false)
   }
 
   if (submitted) {

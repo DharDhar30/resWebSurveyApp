@@ -1,20 +1,26 @@
-import {db} from '../firebase.js';
-import {collection, addDoc, serverTimestamp} from 'firebase/firestore';
+import { db } from '../firebase.js';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-export const submitServey = async(ageGroup, responses) =>{
-  try{
+export const submitSurvey = async (county, responses) => {
+  // Debug log to verify data structure before the network call
+  console.log("1. Service started with:", { county, responses }); 
+  
+  try {
     const payload = {
-      county: "Pinellas",
-      ageGroup: ageGroup,
-      responses: responses,
-      submittedAt: serverTimestamp()
+      county,           // String (e.g., "Pinellas")
+      responses,        // Map/Object of question IDs and ratings
+      submittedAt: serverTimestamp() // Firestore server-side clock
     };
-
-    const docRef = await addDoc(collection(db,"surveyResponses"), payload);
+    
+    // Save to the surveyResponses collection
+    const docRef = await addDoc(collection(db, "surveyResponses"), payload);
+    
+    console.log("2. Success! ID:", docRef.id); 
     return docRef.id;
-  }
-  catch(error){
-    console.error("Database submission error: ", error);
-    throw new Error("Failed to submit survey data.");
+
+  } catch (error) {
+    // Log technical error for debugging and pass it to the UI
+    console.error("3. Submission Error:", error); 
+    throw error;
   }
 };

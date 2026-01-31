@@ -12,9 +12,9 @@
 }
 
   body {
-  background: red !important;
-}
-
+    font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .container {

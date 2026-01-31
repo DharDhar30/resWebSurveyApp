@@ -78,12 +78,6 @@ function App() {
       <div 
       className="app"
       style={{
-      "--bg": colors.background,
-      "--text": colors.textDark,
-      "--accent": colors.accentLight,
-      "--red": colors.red,
-      backgroundColor: "var(--bg)",
-      color: "var(--text)",
       minHeight: "100vh"
      }}
     >

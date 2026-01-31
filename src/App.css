@@ -1,11 +1,9 @@
 :root {
-  --bg: #F5F5F5;       // Primary background
-  --text: #013364;     // Main dark blue 
-  --accent: #E1E8ED;   // Light blue accent 
-  --red: #D30B0D;      // Red for buttons 
+  --bg: #F5F5F5;       /* Primary background */
+  --text: #013364;     /* Main dark blue */
+  --accent: #E1E8ED;   /* Light blue accent */
+  --red: #D30B0D;      /* Red for buttons */
 }
-
-
 
 * {
   box-sizing: border-box;

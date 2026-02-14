@@ -1,30 +1,59 @@
-import{useState, useEffect} from 'react';
-import{ fetchAllResults} from '../services/surveyService';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { fetchAllResults } from '../services/surveyService';
 
-function Dashboard(){
-    const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(true);
+function Dashboard() {
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-      const loadData = async() =>{
-        try{
-          const data = await fetchAllResults();
-          setResults(data);
-        }catch(error){
-          alert("Error fetching survey results: " + error.message);
-        }finally{
-          setLoading(false);
-        }
+  useEffect(() => {
+    //Monitor Authentication State
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (!currentUser) {
+        // If no one is logged in, redirect to the login page
+        navigate('/login');
+      } else {
+        setUser(currentUser);
+        loadData();
       }
-      loadData();
-    },[]);
+    });
 
-    if (loading) return <p>Loading Dashboard Data...</p>;
+    const loadData = async () => {
+      try {
+        const data = await fetchAllResults();
+        setResults(data);
+      } catch (error) {
+        alert("Access Denied: You do not have permission to view this data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return () => unsubscribe(); // Cleanup the listener on unmount
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate('/login');
+  };
+
+  if (loading) return <div className="loading-screen"><p>Verifying Admin Access...</p></div>;
 
   return (
     <div className="admin-dashboard">
-      <h1>Pinellas County Survey Results</h1>
-      <p>Total Submissions: {results.length}</p>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Pinellas County Survey Results</h1>
+        <button onClick={handleLogout} className="logout-btn">Logout</button>
+      </header>
+
+      <div className="stats-bar">
+        <p>Logged in as: <strong>{user?.email}</strong></p>
+        <p>Total Submissions: <strong>{results.length}</strong></p>
+      </div>
 
       <table>
         <thead>
@@ -40,10 +69,9 @@ function Dashboard(){
               <td>{entry.submittedAt?.toDate().toLocaleDateString()}</td>
               <td>{entry.county}</td>
               <td>
-                {/* Displaying responses as a string for quick reading */}
                 {Object.entries(entry.responses).map(([id, score]) => (
-                  <span key={id} style={{ marginRight: '10px' }}>
-                    {id}: <strong>{score}</strong>
+                  <span key={id} style={{ marginRight: '10px', display: 'inline-block' }}>
+                    {id.replace(/_/g, ' ')}: <strong>{score}</strong>
                   </span>
                 ))}
               </td>
@@ -54,3 +82,5 @@ function Dashboard(){
     </div>
   );
 }
+
+export default Dashboard;

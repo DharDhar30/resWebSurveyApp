@@ -1,15 +1,15 @@
-import { useState } from 'react'
-import './App.css'
-import { db } from './firebase'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import { db, auth } from './firebase'; 
+import { onAuthStateChanged } from 'firebase/auth';
 import { submitSurvey } from './services/surveyService';
-//import IssueList from "./features/survey-ui/IssueList";
-//import IssueSlider from "./features/survey-ui/IssueSlider";
-import React from 'react';
-import IssueList from './components/IssueList';
-import colors from './color';
+import { Routes, Route } from 'react-router-dom'; // Import Routes and Route for routing
 
-const API_BASE = "http://127.0.0.1:5000"
+// Component Imports
+import IssueList from './components/IssueList';
+import Login from './admin/Login';
+import Dashboard from './dashboard/Dashboard';
+import colors from './color';
 
 const questions = [
   { id: "issue_id_01", text: "The government should increase funding for public transportation in Pinellas County." },
@@ -27,42 +27,53 @@ const questions = [
   { id: "issue_id_13", text: "Infrastructure spending should prioritize road maintenance and repairs." },
   { id: "issue_id_14", text: "Local government should increase transparency in budget decisions." },
   { id: "issue_id_15", text: "The state should provide more resources for disaster preparedness." }
-]
+];
 
 function App() {
   const [answers, setAnswers] = useState(() => {
-    let initial = {}
+    let initial = {};
     questions.forEach((q) => {
-      initial[q.id] = 5
-    })
-    return initial
-  })
+      initial[q.id] = 5;
+    });
+    return initial;
+  });
 
-  const [touched, setTouched] = useState({})
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [touched, setTouched] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  const [view, setView] = useState('survey'); // 'survey', 'login', or 'admin'
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setView('admin'); // Auto-switch to dashboard if already logged in
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // --- HANDLERS ---
   function handleSlider(issueId, value) {
     setAnswers(prev => ({
       ...prev,
       [issueId]: Number(value)
-    }))
+    }));
     setTouched(prev => ({
       ...prev,
       [issueId]: true
-    }))
+    }));
   }
 
-  const allTouched = questions.every((q) => touched[q.id])
+  const allTouched = questions.every((q) => touched[q.id]);
 
   async function handleSubmit(e) {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
-
-    // Abstracted verion of the submission logic to work smoother with backend changes
-    try {  // Using the imported service function to submit the survey
-      
+    try {
       const docId = await submitSurvey("Pinellas", answers); 
       console.log('Success! ID:', docId); 
       setSubmitted(true);
@@ -73,75 +84,85 @@ function App() {
     }
   }
 
-  if (submitted) {
-    return (
-      <div className="app">
-        <div className="container">
-          <div className="thankyou">
-            <h1>Thank You!</h1>
-            <p>Your responses have been recorded.</p>
-            <p>Thank you for participating in the Pinellas County community survey.</p>
-            <button onClick={() => {
-              setSubmitted(false)
-              setTouched({})
-              let reset = {}
-              questions.forEach((q) => reset[q.id] = 5)
-              setAnswers(reset)
-          }}>
-              Take Again
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
   return (
-    <div className="app">
-      <div className="container">
-        <header>
-          <h1>Community Issues Survey</h1>
-          <span className="badge">Pinellas County, Florida</span>
-          <p>Rate your agreement with each statement from 1-10</p>
-          <div className="scale-info">
-            <span>1 = Strongly Disagree</span>
-            <span>10 = Strongly Agree</span>
-          </div>
-        </header>
-
-        <form onSubmit={handleSubmit}>
-          {questions.map((question, index) => (
-          <div className="question-box" key={question.id}>
-            <p><strong>{index + 1}.</strong> {question.text}</p>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              value={answers[question.id]}
-              onChange={(e) => handleSlider(question.id, e.target.value)}
-            />
-            <div className="value-bubble">{answers[question.id]}</div>
-            <div className="tick-marks">
-              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-              <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+    <Routes>
+      {/* PUBLIC SURVEY ROUTE */}
+      <Route path="/" element={
+        submitted ? (
+          <div className="app">
+            <div className="container">
+              <div className="thankyou">
+                <h1>Thank You!</h1>
+                <p>Your responses have been recorded.</p>
+                <p>Thank you for participating in the Pinellas County community survey.</p>
+                <button onClick={() => {
+                  setSubmitted(false);
+                  setTouched({});
+                  let reset = {};
+                  questions.forEach((q) => reset[q.id] = 5);
+                  setAnswers(reset);
+                }}>
+                  Take Again
+                </button>
+              </div>
             </div>
           </div>
-        ))}
+        ) : (
+          <div className="app">
+            <div className="container">
+              <header>
+                <h1>Community Issues Survey</h1>
+                <span className="badge">Pinellas County, Florida</span>
+                <p>Rate your agreement with each statement from 1-10</p>
+                <div className="scale-info">
+                  <span>1 = Strongly Disagree</span>
+                  <span>10 = Strongly Agree</span>
+                </div>
+              </header>
 
-        <button 
-          type="submit" 
-          className="submit-btn" 
-          disabled={!allTouched || loading}
-        >
-          {loading ? 'Submitting...' : 'Submit'}
-        </button>
+              <form onSubmit={handleSubmit}>
+                {questions.map((question, index) => (
+                  <div className="question-box" key={question.id}>
+                    <p><strong>{index + 1}.</strong> {question.text}</p>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={answers[question.id]}
+                      onChange={(e) => handleSlider(question.id, e.target.value)}
+                    />
+                    <div className="value-bubble">{answers[question.id]}</div>
+                  </div>
+                ))}
 
-        {!allTouched && (
-          <p className="hint">Please answer all questions to submit</p>
-        )}
-      </form>
-    </div>
-  </div>
+                <button 
+                  type="submit" 
+                  className="submit-btn" 
+                  disabled={!allTouched || loading}
+                >
+                  {loading ? 'Submitting...' : 'Submit'}
+                </button>
+              </form>
+
+              <footer style={{ marginTop: '50px', textAlign: 'center' }}>
+                <button 
+                  onClick={() => window.location.href='/login'} 
+                  style={{ opacity: 0.2, fontSize: '11px', background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  Admin Access
+                </button>
+              </footer>
+            </div>
+          </div>
+        )
+      } />
+
+      {/* ADMIN & AUTH ROUTES */}
+      <Route path="/admin" element={<Dashboard />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/auth" element={<Login />} />
+    </Routes>
   );
 }
 
-export default App
+export default App;

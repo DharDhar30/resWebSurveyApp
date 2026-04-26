@@ -156,13 +156,24 @@ function App() {
                   </div>
                 ))}
 
-                <button 
+               <button 
                   type="submit" 
                   className="submit-btn" 
                   disabled={!allTouched || loading}
                 >
                   {loading ? 'Submitting...' : 'Submit'}
                 </button>
+
+                {!allTouched && (
+                  <p className="hint">Must answer all questions to submit</p>
+                )}
+
+                <div className="contact-section">
+                  <h3>Get In Touch</h3>
+                  <p className="phone">(727) 222-1978</p>
+                  <p className="email">hr@betterwaycampaign.com</p>
+                  <p className="address">13801 Washington Rd, A-188<br/>Largo, FL 33774</p>
+                </div>
               </form>
 
               <footer style={{ marginTop: '50px', textAlign: 'center' }}>
@@ -194,3 +205,9 @@ function App() {
 }
 
 export default App;
+
+//* HLLOWRLD JOB - CMPSC-F355
+//HLLOWRLD JOB (973),'HIRUSHA K',CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1)
+//STEP1    EXEC PGM=HLLOWRLD
+//OUTDD    DD  DSN=TERM.CS355,DISP=(NEW,CATLG,DELETE),UNIT=SYSDA
+//

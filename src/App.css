@@ -219,3 +219,41 @@ header p {
   background: #2563eb;
   color: white;
 }
+
+.contact-section {
+  margin-top: 40px;
+  padding: 30px;
+  background: var(--accent);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.contact-section h3 {
+  font-family: var(--font-heading);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.contact-section p {
+  color: var(--text);
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.contact-section .phone {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.contact-section .email {
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.contact-section .address {
+  font-size: 14px;
+  color: #555;
+}

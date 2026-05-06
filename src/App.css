@@ -257,3 +257,39 @@ header p {
   font-size: 14px;
   color: #555;
 }
+
+.optional-contact {
+  background: var(--bg);
+  padding: 20px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  box-shadow: 0 2px 5px rgba(214, 214, 214, 0.1);
+  text-align: center;
+}
+
+.optional-contact h3 {
+  font-family: var(--font-questions);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.optional-contact p {
+  color: #888;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.optional-contact input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  background: white;
+  color: var(--text);
+}

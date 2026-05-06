@@ -61,6 +61,7 @@ function App() {
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [contactInfo, setContactInfo] = useState({ phone: '', email: '' });
 
   const [user, setUser] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -155,6 +156,23 @@ function App() {
                     </div>
                   </div>
                 ))}
+
+                <div className="optional-contact">
+                  <h3>Want Us to Reach Out?</h3>
+                  <p>Optional - Leave your contact info if you'd like updates</p>
+                  <input
+                    type="tel"
+                    placeholder="Phone number"
+                    value={contactInfo.phone}
+                    onChange={(e) => setContactInfo(prev => ({ ...prev, phone: e.target.value }))}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={contactInfo.email}
+                    onChange={(e) => setContactInfo(prev => ({ ...prev, email: e.target.value }))}
+                  />
+                </div> 
 
                <button 
                   type="submit" 
